@@ -2,12 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: Centra;
+  src: url('../public/assets/font/CentraNo2-Bold.ttf');
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: Centra;
+  src: url('../public/assets/font/CentraNo2-Medium.ttf');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: Centra;
+  src: url('../public/assets/font/CentraNo2-Book.ttf');
+  font-weight: 400;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: 'Centra', sans-serif;
 }
 
 a {
@@ -19,4 +36,29 @@ a {
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  width: 4px;
+}
 
+::-webkit-scrollbar-thumb {
+  background-color: rgb(237, 237, 237);
+  border-radius: 40px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+@layer components {
+  .headerLink {
+    @apply cursor-pointer opacity-70 transition hover:opacity-100;
+  }
+
+  .headerIcon {
+    @apply h-6 w-6 cursor-pointer text-gray-700 opacity-70 transition hover:opacity-100;
+  }
+
+  .link {
+    @apply relative cursor-pointer text-lg font-medium before:absolute before:inset-x-0 before:-bottom-1.5 before:h-0.5 before:origin-left before:scale-x-0 before:transform before:rounded-bl before:bg-black before:transition-all before:duration-200 hover:before:scale-x-100;
+  }
+}

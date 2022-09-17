@@ -1,6 +1,9 @@
-import type { NextPage } from 'next'
+import axios from 'axios'
+import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import Banner from '../components/Banner'
+import Header from '../components/Header'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
@@ -12,9 +15,28 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className='text-red-500'>My app</div>
+      <Header />
+
+      <main className="relative h-[200vh] bg-[#e7ecee]">
+        <Banner />
+      </main>
+      <section className="relative z-40 -mt-[100vh] min-h-screen bg-[#181818]">
+        <div className="space-y-10 py-16">
+          <h1 className="ld:text-5xl text-center text-4xl text-white">New promotions</h1>
+        </div>
+      </section>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/categories`)
+
+  return {
+    props: {
+      categories: data
+    },
+  }
 }
 
 export default Home
