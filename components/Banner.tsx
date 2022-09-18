@@ -25,7 +25,7 @@ function Banner() {
 
       {/* Right */}
       <div className="relative hidden h-[450px] w-[450px] transition-all duration-500 md:inline lg:h-[600px] lg:w-[550px]">
-        <Image src="/assets/img/iphone.png" alt="" layout="fill" objectFit="contain" />
+        <Image src="/assets/img/iphone.png" alt="" layout="fill" objectFit="contain" priority/>
       </div>
     </div>
   )
