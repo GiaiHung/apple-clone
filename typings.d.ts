@@ -16,7 +16,7 @@ interface Product extends Category {
     _type: string
     _ref: string
   }
-  price: string
+  price: number
   image: Image[]
 }
 
