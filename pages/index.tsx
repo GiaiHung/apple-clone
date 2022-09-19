@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Banner from '../components/Banner'
+import Basket from '../components/Basket'
 import Header from '../components/Header'
 import Promotions from '../components/Promotions'
 
@@ -26,6 +27,7 @@ const Home = ({ categories, products }: Props) => {
       </main>
 
       <Promotions categories={categories} products={products} />
+      <Basket />
     </>
   )
 }
