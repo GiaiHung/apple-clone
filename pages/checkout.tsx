@@ -1,27 +1,57 @@
+import { ChevronDownIcon } from '@heroicons/react/outline'
+import axios from 'axios'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { Stripe } from 'stripe'
 import CheckoutProduct from '../components/CheckoutProduct'
 import Header from '../components/Header'
 import Button from '../components/Helper/Button'
-import { selectBasket } from '../redux/slices/basketSlice'
+import { selectBasket, selectBasketTotal } from '../redux/slices/basketSlice'
+import { fetchPostJSON } from '../utils/api-helpers'
+import getStripe from '../utils/get-stripejs'
 
 function Checkout() {
   const items = useSelector(selectBasket)
+  const totalAmount = useSelector(selectBasketTotal)
   const router = useRouter()
 
-  const [groupedItemsBasket, setGroupedItemsBasket] = useState({} as {[key: string]: Product[]})
+  const [groupedItemsBasket, setGroupedItemsBasket] = useState({} as { [key: string]: Product[] })
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const groupItems = items.reduce((result, item) => {
-        (result[item._id] = result[item._id] || []).push(item)
+      (result[item._id] = result[item._id] || []).push(item)
 
-        return result
-    }, {} as {[key: string]: Product[]})
+      return result
+    }, {} as { [key: string]: Product[] })
 
     setGroupedItemsBasket(groupItems)
   }, [items])
+
+  const createCheckoutSession = async () => {
+    setLoading(true)
+
+    const checkoutSession: Stripe.Checkout.Session = await fetchPostJSON('/api/checkout_session', {
+      items: items,
+    })
+
+    // Handle error
+    if ((checkoutSession as any).statusCode === 500) {
+      console.error((checkoutSession as any).message)
+      return
+    }
+
+    // Redirect to checkout
+    const stripe = await getStripe()
+    const { error } = await stripe!.redirectToCheckout({
+      sessionId: checkoutSession.id,
+    })
+    console.warn(error.message)
+
+    setLoading(false)
+  }
 
   return (
     <>
@@ -34,20 +64,96 @@ function Checkout() {
       <Header />
 
       <main className="mx-auto mt-6 max-w-5xl space-y-4 pb-24">
-        <h1 className="text-3xl font-semibold lg:text-4xl">
+        <h1 className="ml-12 text-3xl font-semibold lg:ml-0 lg:text-4xl">
           {items.length > 0 ? 'Review your bag.' : 'Your bag is empty.'}
         </h1>
-        <p className="text-lg font-thin italic">Free delivery and free returns.</p>
+        <p className="ml-12 text-lg font-thin italic lg:ml-0">Free delivery and free returns.</p>
         {items.length === 0 && (
-          <Button title="Continue shopping" onClick={() => router.push('/')} />
+          <div className="ml-12 lg:ml-0">
+            <Button title="Continue shopping" onClick={() => router.push('/')} />
+          </div>
         )}
 
         {items.length > 0 && (
-            <div>
-                {Object.entries(groupedItemsBasket).map(([key, items]) => (
-                    <CheckoutProduct key={key} id={key} items={items} />
-                ))}
+          <div className="mx-5 md:mx-8">
+            {Object.entries(groupedItemsBasket).map(([key, items]) => (
+              <CheckoutProduct key={key} id={key} items={items} />
+            ))}
+
+            <div className="my-6 border-b border-gray-200">
+              <div className="flex items-center justify-between text-lg font-thin">
+                <h2>Subtotal</h2>
+                <p>
+                  {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'USD' }).format(
+                    totalAmount
+                  )}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between text-lg font-thin">
+                <h2>SHIPPING</h2>
+                <p>FREE</p>
+              </div>
+
+              <div className="flex items-center justify-between text-lg font-thin">
+                <h2>Estimated tax for</h2>
+                <p>$ -</p>
+              </div>
+
+              <div className="flex items-center justify-between text-lg font-thin">
+                <h2 className="flex cursor-pointer items-center gap-2 text-blue-500 hover:underline">
+                  Enter zip code
+                  <span>
+                    <ChevronDownIcon className="h-6 w-6" />
+                  </span>
+                </h2>
+              </div>
             </div>
+
+            <div className="mb-12 flex items-center justify-between border-b border-gray-200 pb-4 text-xl font-bold lg:text-2xl">
+              <h2>Total</h2>
+              <p>
+                {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'USD' }).format(
+                  totalAmount
+                )}
+              </p>
+            </div>
+
+            <div className="my-12 space-y-4">
+              <h1 className="text-xl font-semibold">How would you like to check out?</h1>
+              <div className="flex flex-col gap-4 lg:flex-row">
+                {/* Card 1 */}
+                <div className="order-2 flex flex-1 flex-col items-center justify-center gap-2 rounded-2xl bg-gray-200 p-8 text-lg font-semibold">
+                  <span>Pay monthly</span>
+                  <span>with Apple Card</span>
+                  <span>
+                    $283.16/mo. at 0% APR<sup className="-top-1">◊</sup>
+                  </span>
+                  <Button title="Check Out with Apple Card Monthly Installments" />
+                  <p className="mt-2 max-w-[240px] text-center text-[13px]">
+                    $0.00 due today, which includes applicable full-price items, down payments,
+                    shipping, and taxes.
+                  </p>
+                </div>
+                {/* Card 2 */}
+                <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-2xl bg-gray-200 p-8 text-lg font-semibold md:order-2">
+                  <span>Pay in full</span>
+                  <span>
+                    {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'USD' }).format(
+                      totalAmount
+                    )}
+                  </span>
+                  <Button
+                    title="Check Out"
+                    noIcon
+                    width="w-full"
+                    onClick={createCheckoutSession}
+                    loading={loading}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </>

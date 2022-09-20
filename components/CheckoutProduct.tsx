@@ -2,7 +2,6 @@ import { ChevronDownIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
 import React from 'react'
 import { urlFor } from '../utils/sanity'
-import Currency from 'react-currency-format'
 
 interface Props {
   id: string
@@ -13,7 +12,7 @@ function CheckoutProduct({ id, items }: Props) {
   return (
     <div className="flex flex-col items-center gap-4 border-b border-gray-200 pb-5 lg:flex-row">
       <div className="relative h-44 w-44">
-        <Image src={urlFor(items[0].image[0]).url()} alt="" layout="fill" objectFit="contain" />
+        <Image src={urlFor(items[0].image[0]).url()} alt="" layout="fill" objectFit="contain" priority/>
       </div>
 
       <div className="flex flex-1 items-end gap-8 lg:items-center">
