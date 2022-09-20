@@ -21,7 +21,7 @@ function Checkout() {
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    const groupItems = items.reduce((result, item) => {
+    const groupItems = items.reduce((result, item: Product) => {
       (result[item._id] = result[item._id] || []).push(item)
 
       return result
