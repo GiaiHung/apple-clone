@@ -13,6 +13,7 @@ import Button from '../components/Helper/Button'
 import { useMediaQuery } from 'react-responsive'
 import { GetServerSideProps } from 'next'
 import axios from 'axios'
+import { useSession } from 'next-auth/react'
 
 interface Props {
   products: StripeProduct[]
@@ -27,6 +28,8 @@ function Success({ products }: Props) {
   const totalAmount = products.reduce((acc, product) => acc + product.price.unit_amount / 100, 0)
 
   const showOrderSummaryCondition = isTabletOrMobile ? orderSummaryCondition : true
+
+  const { data: session } = useSession()
 
   const handleShowOrderSummary = () => {
     setOrderSummaryCondition((prev) => !prev)
@@ -52,7 +55,7 @@ function Success({ products }: Props) {
         </Link>
       </header>
 
-      <main className="mx-4 flex max-w-5xl flex-col pb-6 lg:ml-24 lg:max-w-full lg:flex-row lg:items-center lg:gap-8">
+      <main className="mx-4 flex h-screen max-w-5xl flex-col overflow-hidden pb-6 lg:ml-24 lg:max-w-full lg:flex-row lg:items-center lg:gap-8">
         <section className="order-2 space-y-4 lg:order-1 lg:w-3/5">
           <section>
             <Link href="/">
@@ -74,9 +77,9 @@ function Success({ products }: Props) {
             </div>
             <div>
               <p className="text-md text-gray-500">Order # {session_id?.slice(-5)}</p>
-              <h4 className="text-lg">
+              <h4 className="flex gap-2 text-lg">
                 Thank you
-                {/* {session ? session.user?.name?.split(' ')[0] : 'Guest'} */}
+                <span className="font-semibold">{session ? session.user?.name : 'Guest'}</span>
               </h4>
             </div>
           </section>

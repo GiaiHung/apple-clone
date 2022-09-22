@@ -5,9 +5,10 @@ import React from 'react'
 import { SearchIcon, ShoppingBagIcon, UserIcon } from '@heroicons/react/outline'
 import { selectBasket } from '../redux/slices/basketSlice'
 import { useSelector } from 'react-redux'
+import { signIn, signOut, useSession } from 'next-auth/react'
 
 function Header() {
-  const session = false
+  const { data: session }: any = useSession()
 
   const items = useSelector(selectBasket)
 
@@ -47,16 +48,17 @@ function Header() {
         </Link>
         {session ? (
           <Image
-            src=""
+            src={session?.user?.image}
             alt=""
             width={34}
             height={34}
-            className="rounded-full"
+            className="rounded-full cursor-pointer"
             objectFit="contain"
+            onClick={() => signOut()}
           />
         ) : (
           <div>
-            <UserIcon className="headerIcon" />
+            <UserIcon className="headerIcon" onClick={() => signIn()} />
           </div>
         )}
       </div>

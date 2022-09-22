@@ -6,12 +6,17 @@ import Basket from '../components/Basket'
 import Header from '../components/Header'
 import Promotions from '../components/Promotions'
 
+import { getSession } from 'next-auth/react'
+import type { Session } from 'next-auth'
+import Adverisement from '../components/Adverisement'
+
 interface Props {
   categories: Category[]
   products: Product[]
+  session: Session
 }
 
-const Home = ({ categories, products }: Props) => {
+const Home = ({ categories, products, session }: Props) => {
   return (
     <>
       <Head>
@@ -27,19 +32,23 @@ const Home = ({ categories, products }: Props) => {
       </main>
 
       <Promotions categories={categories} products={products} />
+      <Adverisement />
       <Basket />
     </>
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+// Make sure the avatar is loaded in serverside rendering
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const { data: categories } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/categories`)
   const { data: products } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`)
+  const session = await getSession(context)
 
   return {
     props: {
       categories,
       products,
+      session,
     },
   }
 }

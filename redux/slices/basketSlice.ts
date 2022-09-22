@@ -22,7 +22,7 @@ export const basketSlice = createSlice({
 
       let newBasket = [...state.items]
 
-      if (index > 0) {
+      if (index >= 0) {
         newBasket.splice(index, 1)
       } else {
         console.log(`Can't find item with id: ${action.payload.id} in the basket!`)
