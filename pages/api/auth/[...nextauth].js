@@ -16,7 +16,7 @@ export const authOptions = {
   pages: {
     signIn: '/auth/signin'
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXT_AUTH_SECRET,
   adapter: SanityAdapter(sanityClient),
 }
 export default NextAuth(authOptions)
