@@ -38,7 +38,7 @@ function CheckoutProduct({ id, items }: Props) {
             <h2 className="text-lg font-semibold lg:text-2xl">{items[0].title}</h2>
             <p className="flex cursor-pointer items-center gap-x-1 font-semibold">
               {items.length}
-              <ChevronDownIcon className="h-6 w-6 text-blue-500" />
+              <ChevronDownIcon className="h-6 w-6 text-blue-500" onClick={removeItemFromBasket} />
             </p>
           </div>
 

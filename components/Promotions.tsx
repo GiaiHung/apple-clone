@@ -8,6 +8,8 @@ interface Props {
 }
 
 function Promotions({ categories, products }: Props) {
+  // Categories is an array of 4 products: mac, iphone, ipad, applewatch
+  // Filter the item with the category id matches with categories
   const showProducts = (index: number) => {
     return products
       .filter((product) => product.category._ref === categories[index]._id)
